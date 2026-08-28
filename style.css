@@ -265,7 +265,10 @@ body {
 
 .exception-word {
   font-weight: 700;
-  color: var(--wrong);
+  color: var(--learning);
+  background: var(--learning-bg);
+  padding: 1px 6px;
+  border-radius: 5px;
 }
 
 .card-row-buttons {
