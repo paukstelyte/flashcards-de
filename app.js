@@ -4,9 +4,12 @@
    pre-loaded with article rules and their exceptions, sourced from standard
    German grammar guides. A word is auto-marked Known once it's been answered
    correctly two times in a row; a wrong answer resets that streak. Once a
-   card is flipped, clicking anywhere on the page moves on to the next word. */
+   card is flipped, clicking anywhere on the page moves on to the next word.
+   A toggle in the header switches between the plain theme and a colourful
+   one, remembered in localStorage. */
 
 var STORAGE_KEY = 'flashcardsDE.v3';
+var THEME_KEY = 'flashcardsDE.theme';
 var ARTICLES = ['der', 'die', 'das'];
 var KNOWN_STREAK = 2;
 
@@ -283,9 +286,9 @@ function buildWordRow(word) {
   buttons.appendChild(deleteBtn);
 
   main.appendChild(text);
+  main.appendChild(buildStatusBadge(wordStatus(word)));
   main.appendChild(buttons);
   row.appendChild(main);
-  row.appendChild(buildStatusBadge(wordStatus(word)));
 
   return row;
 }
@@ -516,6 +519,44 @@ function renderChoiceButtons(word) {
   });
 }
 
+/* ---------- Theme ---------- */
+
+/* Reads the saved theme preference, defaulting to the original plain theme. */
+function loadTheme() {
+  try {
+    var saved = localStorage.getItem(THEME_KEY);
+    if (saved === 'colourful' || saved === 'default') {
+      return saved;
+    }
+  } catch (err) {
+    /* Storage may be blocked (e.g. private browsing); fall back to the default theme. */
+  }
+  return 'default';
+}
+
+/* Applies the given theme to the page and updates the toggle button's icon and label. */
+function applyTheme(theme) {
+  if (theme === 'colourful') {
+    document.documentElement.setAttribute('data-theme', 'colourful');
+  } else {
+    document.documentElement.removeAttribute('data-theme');
+  }
+  var toggle = document.getElementById('themeToggle');
+  toggle.textContent = theme === 'colourful' ? '🖋️ Back to plain' : '🎨 Bring on the colour';
+  toggle.setAttribute('aria-label', theme === 'colourful' ? 'Switch to plain theme' : 'Switch to colourful theme');
+}
+
+/* Switches between the plain and colourful themes and remembers the choice for next time. */
+function toggleTheme() {
+  var next = document.documentElement.getAttribute('data-theme') === 'colourful' ? 'default' : 'colourful';
+  applyTheme(next);
+  try {
+    localStorage.setItem(THEME_KEY, next);
+  } catch (err) {
+    /* Storage may be full or blocked; the choice just won't persist across reloads. */
+  }
+}
+
 /* ---------- Tabs ---------- */
 
 /* Switches between the "Practice" and "Reference" views, (re)starting practice each time it's opened. */
@@ -533,8 +574,11 @@ function showView(view) {
 }
 
 /* Wires up the add form, tabs, choice buttons, the click-anywhere-to-continue
-   behaviour, and the restart action, then draws the deck. */
+   behaviour, the theme toggle, and the restart action, then draws the deck. */
 function init() {
+  applyTheme(loadTheme());
+  document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+
   document.getElementById('addForm').addEventListener('submit', function (event) {
     event.preventDefault();
     var nounInput = document.getElementById('nounInput');

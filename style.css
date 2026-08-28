@@ -18,6 +18,14 @@
   --wrong-bg: #fee2e2;
   --wrong-line: #f6c9c9;
   --radius: 12px;
+  --card-shadow: none;
+  --btn-gradient: none;
+  --der-bg: var(--bg);
+  --der-line: var(--line);
+  --die-bg: var(--bg);
+  --die-line: var(--line);
+  --das-bg: var(--bg);
+  --das-line: var(--line);
 }
 
 * {
@@ -33,6 +41,7 @@ body {
   font-size: 15px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  transition: background 0.2s, color 0.2s;
 }
 
 .page {
@@ -46,15 +55,45 @@ body {
   margin-bottom: 24px;
 }
 
+.header-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
 .header h1 {
   margin: 0 0 6px;
   font-size: 28px;
   letter-spacing: -0.02em;
+  transition: background 0.2s;
 }
 
 .subtitle {
   margin: 0;
   color: var(--muted);
+}
+
+.theme-toggle {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 16px;
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--ink);
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, transform 0.15s;
+}
+
+.theme-toggle:hover {
+  transform: scale(1.03);
+  border-color: #c9c5bd;
 }
 
 /* ---------- Tabs ---------- */
@@ -109,6 +148,8 @@ body {
   border-radius: var(--radius);
   padding: 16px 20px;
   margin-bottom: 20px;
+  box-shadow: var(--card-shadow);
+  transition: background 0.2s, border-color 0.2s;
 }
 
 .howto h2 {
@@ -128,10 +169,12 @@ body {
 
 .add-section {
   padding: 18px 20px 20px;
-  background: #eef2ff;
-  border: 1px solid #c7d2fe;
+  background: var(--add-section-bg, #eef2ff);
+  border: 1px solid var(--add-section-line, #c7d2fe);
   border-radius: var(--radius);
   margin-bottom: 22px;
+  box-shadow: var(--card-shadow);
+  transition: background 0.2s, border-color 0.2s;
 }
 
 .add-section h2 {
@@ -188,14 +231,16 @@ body {
   font-weight: 600;
   color: #fff;
   background: var(--accent);
+  background-image: var(--btn-gradient, none);
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: background 0.15s, opacity 0.15s;
 }
 
 #addButton:hover {
-  background: var(--accent-dark);
+  background-color: var(--accent-dark);
+  opacity: 0.92;
 }
 
 .counter {
@@ -207,11 +252,11 @@ body {
 /* ---------- Reference list ---------- */
 
 .category-group + .category-group {
-  margin-top: 28px;
+  margin-top: 22px;
 }
 
 .category-heading {
-  margin: 0 0 10px;
+  margin: 0 0 8px;
   padding-bottom: 6px;
   font-size: 12.5px;
   font-weight: 700;
@@ -225,32 +270,47 @@ body {
   list-style: none;
   margin: 0;
   padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.card-row {
-  padding: 14px 16px;
   background: var(--card);
   border: 1px solid var(--line);
   border-radius: var(--radius);
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.card-row {
+  padding: 9px 16px;
+  border-bottom: 1px solid var(--line);
+  transition: background 0.15s, border-color 0.2s;
+}
+
+.card-row:last-child {
+  border-bottom: none;
+}
+
+.card-row:hover {
+  background: var(--bg);
 }
 
 .card-row-main {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
+  align-items: center;
+  gap: 10px;
 }
 
 .card-text {
+  flex: 1 1 auto;
   min-width: 0;
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 10px;
 }
 
 .card-question {
-  margin: 0 0 4px;
+  margin: 0;
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .card-question .article-tag {
@@ -260,7 +320,7 @@ body {
 .card-answer {
   margin: 0;
   color: var(--muted);
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .exception-word {
@@ -300,11 +360,12 @@ body {
 }
 
 .status-badge {
+  flex: none;
   display: inline-block;
-  margin-top: 8px;
   padding: 3px 10px;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
+  white-space: nowrap;
   border-radius: 999px;
   background: #f1efea;
   color: var(--muted);
@@ -427,6 +488,8 @@ body {
   border: 1px solid var(--line);
   border-radius: var(--radius);
   backface-visibility: hidden;
+  box-shadow: var(--card-shadow);
+  transition: background 0.2s, border-color 0.2s;
 }
 
 .practice-noun {
@@ -497,6 +560,10 @@ body {
   cursor: not-allowed;
 }
 
+.choice-btn[data-article="der"] { background: var(--der-bg); border-color: var(--der-line); }
+.choice-btn[data-article="die"] { background: var(--die-bg); border-color: var(--die-line); }
+.choice-btn[data-article="das"] { background: var(--das-bg); border-color: var(--das-line); }
+
 .choice-btn.correct-pick {
   color: var(--known);
   background: var(--known-bg);
@@ -536,6 +603,7 @@ body {
   background: var(--card);
   border: 1px solid var(--line);
   border-radius: var(--radius);
+  box-shadow: var(--card-shadow);
 }
 
 .review-done.visible {
@@ -553,13 +621,16 @@ body {
   font-weight: 600;
   color: #fff;
   background: var(--accent);
+  background-image: var(--btn-gradient, none);
   border: none;
   border-radius: 8px;
   cursor: pointer;
+  transition: background 0.15s, opacity 0.15s;
 }
 
 #restartPracticeBtn:hover {
-  background: var(--accent-dark);
+  background-color: var(--accent-dark);
+  opacity: 0.92;
 }
 
 /* ---------- Small screens ---------- */
@@ -580,4 +651,63 @@ body {
   .choice-buttons {
     flex-wrap: wrap;
   }
+}
+
+/* ---------- Colourful theme ---------- */
+
+:root[data-theme="colourful"] {
+  --bg: #f5f3ff;
+  --card: #ffffff;
+  --ink: #241b4e;
+  --muted: #746b9c;
+  --line: #e3ddfb;
+  --accent: #9333ea;
+  --accent-dark: #7e22ce;
+  --known: #059669;
+  --known-bg: #d1fae5;
+  --known-line: #6ee7b7;
+  --learning: #d97706;
+  --learning-bg: #fef0c7;
+  --learning-line: #fcd34d;
+  --wrong: #e11d48;
+  --wrong-bg: #ffe1e8;
+  --wrong-line: #fda4b8;
+  --card-shadow: 0 10px 30px -12px rgba(147, 51, 234, 0.28);
+  --btn-gradient: linear-gradient(135deg, #9333ea, #db2777 55%, #f97316);
+  --add-section-bg: linear-gradient(135deg, #ede9fe, #fce7f3);
+  --add-section-line: #e9d5ff;
+  --der-bg: #dbeafe;
+  --der-line: #93c5fd;
+  --die-bg: #fce7f3;
+  --die-line: #f9a8d4;
+  --das-bg: #dcfce7;
+  --das-line: #86efac;
+}
+
+:root[data-theme="colourful"] .header h1 {
+  background: linear-gradient(120deg, #9333ea, #db2777 60%, #f97316);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+:root[data-theme="colourful"] .tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent-dark);
+}
+
+:root[data-theme="colourful"] .category-heading {
+  color: var(--accent-dark);
+  border-bottom-color: var(--line);
+}
+
+:root[data-theme="colourful"] .practice-noun {
+  background: linear-gradient(120deg, #9333ea, #db2777);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+:root[data-theme="colourful"] .card-row:hover {
+  background: var(--add-section-bg);
 }
