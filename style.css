@@ -266,59 +266,51 @@ body {
   border-bottom: 1px solid var(--line);
 }
 
-.card-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  box-shadow: var(--card-shadow);
-  overflow: hidden;
-  transition: background 0.2s, border-color 0.2s;
+.word-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
 }
 
-.card-row {
-  padding: 9px 16px;
+.word-table th {
+  padding: 0 10px 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  text-align: left;
   border-bottom: 1px solid var(--line);
-  transition: background 0.15s, border-color 0.2s;
 }
 
-.card-row:last-child {
+.word-table th:nth-child(1) { width: 22%; }
+.word-table th:nth-child(2) { width: 12%; }
+.word-table th:nth-child(4) { width: 32px; }
+
+.word-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+
+.word-table tbody tr:last-child td {
   border-bottom: none;
 }
 
-.card-row:hover {
+.word-table tbody tr:hover {
   background: var(--bg);
 }
 
-.card-row-main {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.card-text {
-  flex: 1 1 auto;
-  min-width: 0;
-  display: flex;
-  align-items: baseline;
-  flex-wrap: wrap;
-  gap: 4px 10px;
-}
-
-.card-question {
-  margin: 0;
+.word-cell {
   font-weight: 600;
-  white-space: nowrap;
 }
 
-.card-question .article-tag {
+.article-cell {
   color: var(--accent-dark);
+  font-weight: 600;
 }
 
-.card-answer {
-  margin: 0;
+.rule-cell {
   color: var(--muted);
   font-size: 13px;
 }
@@ -331,17 +323,17 @@ body {
   border-radius: 5px;
 }
 
-.card-row-buttons {
-  flex: none;
-  display: flex;
-  gap: 6px;
+.delete-cell {
+  text-align: right;
 }
 
-.icon-btn {
-  padding: 5px 10px;
-  font: inherit;
-  font-size: 13px;
-  color: #46433e;
+.delete-x {
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  font-size: 16px;
+  line-height: 1;
+  color: var(--muted);
   background: #f1efea;
   border: 1px solid var(--line);
   border-radius: 7px;
@@ -349,11 +341,7 @@ body {
   transition: background 0.15s, border-color 0.15s, color 0.15s;
 }
 
-.icon-btn:hover {
-  border-color: #c9c5bd;
-}
-
-.icon-btn.delete-btn:hover {
+.delete-x:hover {
   color: var(--wrong);
   background: var(--wrong-bg);
   border-color: var(--wrong-line);
@@ -382,54 +370,6 @@ body {
   color: var(--learning);
   background: var(--learning-bg);
   border-color: var(--learning-line);
-}
-
-/* ---------- Inline edit ---------- */
-
-.edit-form {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.edit-form input,
-.edit-form select,
-.edit-form textarea {
-  padding: 8px 10px;
-  font: inherit;
-  color: inherit;
-  background: var(--bg);
-  border: 1px solid var(--line);
-  border-radius: 7px;
-  outline: none;
-  resize: vertical;
-}
-
-.edit-form input:focus,
-.edit-form select:focus,
-.edit-form textarea:focus {
-  border-color: #9a95c9;
-}
-
-.edit-form-buttons {
-  display: flex;
-  gap: 6px;
-}
-
-.save-btn {
-  padding: 6px 14px;
-  font: inherit;
-  font-size: 13px;
-  font-weight: 600;
-  color: #fff;
-  background: var(--accent);
-  border: none;
-  border-radius: 7px;
-  cursor: pointer;
-}
-
-.save-btn:hover {
-  background: var(--accent-dark);
 }
 
 .empty {
@@ -640,8 +580,10 @@ body {
     padding: 24px 14px 60px;
   }
 
-  .card-row-main {
-    flex-direction: column;
+  .word-table th,
+  .word-table td {
+    padding: 7px 6px;
+    font-size: 12.5px;
   }
 
   .practice-card {
@@ -708,6 +650,6 @@ body {
   color: transparent;
 }
 
-:root[data-theme="colourful"] .card-row:hover {
+:root[data-theme="colourful"] .word-table tbody tr:hover {
   background: var(--add-section-bg);
 }
