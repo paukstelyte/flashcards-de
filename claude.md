@@ -1,23 +1,32 @@
 # flashcards-de
 
-## Project Overview
-_What this app does, in 1-3 sentences._
+## What it does
+A flashcard study tool, pre-loaded with a deck for practising German noun
+articles (der/die/das): gender rules by noun ending, semantic rules (people,
+days, rivers, etc.), and the common exceptions to each — with the reasoning
+included right in the answer. Users can also add, edit, and delete their own
+cards. Review mode shows the question, flips to the answer on click or
+Space, and each card is marked Known or Still learning.
 
 ## Tech Stack
-_Language, framework, key libraries._
+- Plain HTML, CSS, JavaScript (no framework)
+- Data stored in `localStorage` under the single key `flashcardsDE.v1`
+- No build step — open `index.html` directly in a browser
 
-## Commands
-_e.g._
-- Install: `npm install`
-- Run dev server: `npm run dev`
-- Test: `npm test`
-- Lint: `npm run lint`
+## Running the app
+Open `index.html` in a browser, or serve the folder with any static server.
 
 ## Project Structure
-_Key directories/files and what they contain._
+- `index.html` — markup for the two views (My Deck, Review)
+- `style.css` — all styling
+- `app.js` — deck state, persistence, and both views' rendering/logic
 
-## Code Style & Conventions
-_Formatting rules, naming conventions, patterns to follow._
+## Conventions
+- One file per concern: `index.html`, `style.css`, `app.js`
+- Add a comment above each function explaining what it does
+- Always confirm with me before adding a new feature or page that wasn't in the original request
+- If anything is unclear, ask me a question before making assumptions
 
-## Notes
-_Anything else Claude should know: gotchas, in-progress work, decisions._
+## Do not
+- Add any npm dependencies
+- Commit any secrets — no API keys, passwords, or tokens in the files
