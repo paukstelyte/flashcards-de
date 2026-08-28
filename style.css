@@ -263,6 +263,11 @@ body {
   font-size: 14px;
 }
 
+.exception-word {
+  font-weight: 700;
+  color: var(--wrong);
+}
+
 .card-row-buttons {
   flex: none;
   display: flex;

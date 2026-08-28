@@ -79,17 +79,17 @@ var SEED_WORDS = [
   { noun: 'Million', article: 'die', category: CATEGORIES[3], rule: 'Cardinal numbers used as nouns are feminine.' },
 
   // Exceptions — worth learning by name, since the rules above don't predict them
-  { noun: 'Mädchen', article: 'das', category: CATEGORIES[4], rule: 'Exception to "female = feminine": it ends in -chen (a diminutive of "die Magd"), and -chen nouns are always neuter, even when they name a female person.' },
-  { noun: 'Junge', article: 'der', category: CATEGORIES[4], rule: 'Exception to "-e ending is often feminine": it names a male person, so natural gender overrides the ending.' },
-  { noun: 'Käse', article: 'der', category: CATEGORIES[4], rule: 'Exception to "-e ending is often feminine"; it is simply masculine by convention.' },
-  { noun: 'Name', article: 'der', category: CATEGORIES[4], rule: 'Exception to "-e ending is often feminine"; it is masculine (and a "weak noun").' },
-  { noun: 'Person', article: 'die', category: CATEGORIES[4], rule: 'Stays feminine even when describing a man; grammatical gender does not switch with the person\'s sex here.' },
-  { noun: 'Rhein', article: 'der', category: CATEGORIES[4], rule: 'Exception to "river names are usually feminine"; along with der Main and der Neckar, it is masculine.' },
-  { noun: 'Main', article: 'der', category: CATEGORIES[4], rule: 'Another masculine exception among mostly-feminine German river names.' },
-  { noun: 'Bier', article: 'das', category: CATEGORIES[4], rule: 'Exception to "alcoholic drinks are usually masculine"; beer is neuter.' },
-  { noun: 'Stahl', article: 'der', category: CATEGORIES[4], rule: 'Exception to "metals are usually neuter"; steel is masculine.' },
-  { noun: 'Gewitter', article: 'das', category: CATEGORIES[4], rule: 'Exception to "weather phenomena are usually masculine"; thunderstorm is neuter.' },
-  { noun: 'Auto', article: 'das', category: CATEGORIES[4], rule: 'A loanword that does not follow a native gender pattern; neuter by convention, like most nouns ending in -o.' }
+  { noun: 'Mädchen', article: 'das', category: CATEGORIES[4], rule: 'Exception to the rule that female people take die: das Mädchen ends in -chen (a diminutive of "die Magd"), and -chen nouns are always das, even when they name a female person.' },
+  { noun: 'Junge', article: 'der', category: CATEGORIES[4], rule: 'Exception to the rule that -e-ending nouns are usually die: der Junge names a male person, so natural gender overrides the ending.' },
+  { noun: 'Käse', article: 'der', category: CATEGORIES[4], rule: 'Exception to the rule that -e-ending nouns are usually die: der Käse is simply der by convention.' },
+  { noun: 'Name', article: 'der', category: CATEGORIES[4], rule: 'Exception to the rule that -e-ending nouns are usually die: der Name is der by convention (and a "weak noun").' },
+  { noun: 'Person', article: 'die', category: CATEGORIES[4], rule: 'Exception to the rule that male people take der: die Person stays die even when describing a man — grammatical gender doesn\'t switch with the person\'s sex here.' },
+  { noun: 'Rhein', article: 'der', category: CATEGORIES[4], rule: 'Exception to the rule that river names are usually die: der Rhein is masculine, along with der Main and der Neckar.' },
+  { noun: 'Main', article: 'der', category: CATEGORIES[4], rule: 'Exception to the rule that river names are usually die: der Main is another masculine river name, along with der Rhein and der Neckar.' },
+  { noun: 'Bier', article: 'das', category: CATEGORIES[4], rule: 'Exception to the rule that alcoholic drinks are usually der: das Bier is neuter.' },
+  { noun: 'Stahl', article: 'der', category: CATEGORIES[4], rule: 'Exception to the rule that metals are usually das: der Stahl is masculine.' },
+  { noun: 'Gewitter', article: 'das', category: CATEGORIES[4], rule: 'Exception to the rule that weather phenomena are usually der: das Gewitter is neuter.' },
+  { noun: 'Auto', article: 'das', category: CATEGORIES[4], rule: 'Exception to the reliable-ending rules: as a loanword ending in -o, das Auto has no predictable pattern to follow — it is das by convention.' }
 ];
 
 var words = loadWords();
@@ -249,7 +249,7 @@ function buildWordRow(word) {
 
   var rule = document.createElement('p');
   rule.className = 'card-answer';
-  rule.textContent = word.rule;
+  rule.innerHTML = formatRuleHtml(word.rule);
 
   text.appendChild(heading);
   text.appendChild(rule);
@@ -290,6 +290,13 @@ function escapeHtml(text) {
   var div = document.createElement('div');
   div.textContent = text;
   return div.innerHTML;
+}
+
+/* Escapes a rule's text and highlights the word "exception"/"exceptions"
+   wherever it appears, so that word alone stands out in bold red. */
+function formatRuleHtml(text) {
+  var escaped = escapeHtml(text);
+  return escaped.replace(/\b(exceptions?)\b/gi, '<span class="exception-word">$1</span>');
 }
 
 /* Builds a small badge showing whether a word is unpractised, known, or still learning. */
@@ -473,7 +480,7 @@ function renderPractice() {
     banner.textContent = correct ? 'Correct!' : 'Not quite — you chose ' + chosenArticle + '.';
     banner.className = 'result-banner ' + (correct ? 'correct' : 'incorrect');
     document.getElementById('practiceAnswer').textContent = word.article + ' ' + word.noun;
-    document.getElementById('practiceRule').textContent = word.rule;
+    document.getElementById('practiceRule').innerHTML = formatRuleHtml(word.rule);
 
     var status = wordStatus(word);
     var badge = document.getElementById('practiceStatusBadge');
