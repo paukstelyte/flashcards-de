@@ -3,7 +3,8 @@
    article. Words live in localStorage under a single key; the deck starts
    pre-loaded with article rules and their exceptions, sourced from standard
    German grammar guides. A word is auto-marked Known once it's been answered
-   correctly two times in a row; a wrong answer resets that streak. */
+   correctly two times in a row; a wrong answer resets that streak. Once a
+   card is flipped, clicking anywhere on the page moves on to the next word. */
 
 var STORAGE_KEY = 'flashcardsDE.v3';
 var ARTICLES = ['der', 'die', 'das'];
@@ -427,14 +428,14 @@ function renderPractice() {
   var empty = document.getElementById('practiceEmpty');
   var cardEl = document.getElementById('practiceCard');
   var progress = document.getElementById('practiceProgress');
-  var actions = document.getElementById('practiceActions');
+  var hint = document.getElementById('continueHint');
   var done = document.getElementById('practiceDone');
 
   if (!words.length) {
     empty.classList.remove('hidden');
     cardEl.style.display = 'none';
     progress.textContent = '';
-    actions.classList.remove('visible');
+    hint.classList.remove('visible');
     done.classList.remove('visible');
     return;
   }
@@ -442,7 +443,7 @@ function renderPractice() {
 
   if (practiceIndex >= practiceOrder.length) {
     cardEl.style.display = 'none';
-    actions.classList.remove('visible');
+    hint.classList.remove('visible');
     progress.textContent = '';
     done.classList.add('visible');
 
@@ -462,7 +463,7 @@ function renderPractice() {
 
   var flipped = !!chosenArticle;
   document.getElementById('practiceCardInner').classList.toggle('flipped', flipped);
-  actions.classList.toggle('visible', flipped);
+  hint.classList.toggle('visible', flipped);
 
   renderChoiceButtons(word);
 
@@ -519,7 +520,8 @@ function showView(view) {
   }
 }
 
-/* Wires up the add form, tabs, choice buttons, and the next-word action, then draws the deck. */
+/* Wires up the add form, tabs, choice buttons, the click-anywhere-to-continue
+   behaviour, and the restart action, then draws the deck. */
 function init() {
   populateCategorySelect(document.getElementById('categoryInput'), null);
 
@@ -545,10 +547,19 @@ function init() {
   document.getElementById('choiceButtons').addEventListener('click', function (event) {
     if (event.target.classList.contains('choice-btn')) {
       chooseArticle(event.target.dataset.article);
+      /* Stop this same click from also reaching the document-level listener
+         below, which would otherwise skip straight to the next word. */
+      event.stopPropagation();
     }
   });
 
-  document.getElementById('nextWordBtn').addEventListener('click', goToNextWord);
+  /* Once a card is flipped, a click anywhere on the page moves on to the next word. */
+  document.addEventListener('click', function () {
+    if (chosenArticle && document.getElementById('practiceView').classList.contains('active')) {
+      goToNextWord();
+    }
+  });
+
   document.getElementById('restartPracticeBtn').addEventListener('click', startPractice);
 
   renderReference();

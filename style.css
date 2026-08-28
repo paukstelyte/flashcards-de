@@ -430,6 +430,7 @@ body {
 .practice-back {
   transform: rotateY(180deg);
   gap: 8px;
+  cursor: pointer;
 }
 
 .result-banner {
@@ -506,32 +507,18 @@ body {
   border-color: var(--known-line);
 }
 
-/* ---------- Next word action ---------- */
+/* ---------- Continue hint ---------- */
 
-.review-actions {
+.continue-hint {
   display: none;
-  justify-content: center;
-  margin-top: 18px;
+  margin: 18px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+  text-align: center;
 }
 
-.review-actions.visible {
-  display: flex;
-}
-
-#nextWordBtn {
-  padding: 11px 26px;
-  font: inherit;
-  font-weight: 600;
-  color: #fff;
-  background: var(--accent);
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-
-#nextWordBtn:hover {
-  background: var(--accent-dark);
+.continue-hint.visible {
+  display: block;
 }
 
 .review-done {
