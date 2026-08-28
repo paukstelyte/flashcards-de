@@ -4,9 +4,12 @@
    pre-loaded with article rules and their exceptions, sourced from standard
    German grammar guides. A word is auto-marked Known once it's been answered
    correctly two times in a row; a wrong answer resets that streak. Once a
-   card is flipped, clicking anywhere on the page moves on to the next word. */
+   card is flipped, clicking anywhere on the page moves on to the next word.
+   A toggle in the header switches between the plain theme and a colourful
+   one, remembered in localStorage. */
 
 var STORAGE_KEY = 'flashcardsDE.v3';
+var THEME_KEY = 'flashcardsDE.theme';
 var ARTICLES = ['der', 'die', 'das'];
 var KNOWN_STREAK = 2;
 
@@ -100,7 +103,6 @@ var words = loadWords();
 var practiceOrder = [];
 var practiceIndex = 0;
 var chosenArticle = null;
-var editingId = null;
 
 /* Reads the saved deck from localStorage; on first run (nothing saved yet),
    seeds it with the starter German-article words. Corrupt data falls back to the seed too. */
@@ -170,40 +172,9 @@ function deleteWord(id) {
   renderReference();
 }
 
-/* Applies edited noun/article/category/rule text to an existing word. */
-function updateWord(id, noun, article, category, rule) {
-  var word = findWord(id);
-  var n = noun.trim();
-  var r = rule.trim();
-  if (!word || !n || !r || ARTICLES.indexOf(article) === -1 || CATEGORIES.indexOf(category) === -1) {
-    return;
-  }
-  word.noun = n;
-  word.article = article;
-  word.category = category;
-  word.rule = r;
-  saveWords();
-  editingId = null;
-  renderReference();
-}
-
 /* ---------- Reference view ---------- */
 
-/* Fills a <select> with the fixed category list. */
-function populateCategorySelect(select, selected) {
-  select.innerHTML = '';
-  CATEGORIES.forEach(function (category) {
-    var option = document.createElement('option');
-    option.value = category;
-    option.textContent = category;
-    if (category === selected) {
-      option.selected = true;
-    }
-    select.appendChild(option);
-  });
-}
-
-/* Draws the word counter, the empty state, and the reference list grouped by category. */
+/* Draws the word counter, the empty state, and the reference table grouped by category. */
 function renderReference() {
   document.getElementById('referenceCounter').textContent =
     words.length + (words.length === 1 ? ' word' : ' words') + ' in your deck.';
@@ -226,66 +197,63 @@ function renderReference() {
     heading.textContent = category + ' (' + wordsInCategory.length + ')';
     section.appendChild(heading);
 
-    var list = document.createElement('ul');
-    list.className = 'card-list';
-    wordsInCategory.forEach(function (word) {
-      list.appendChild(word.id === editingId ? buildEditRow(word) : buildWordRow(word));
-    });
-    section.appendChild(list);
-
+    section.appendChild(buildWordTable(wordsInCategory));
     groups.appendChild(section);
   });
 }
 
-/* Builds the read-only row for one word: article + noun, rule, status badge, edit/delete buttons. */
-function buildWordRow(word) {
-  var row = document.createElement('li');
-  row.className = 'card-row';
+/* Builds a table of words: one row per word, columns for noun, article,
+   a short explanation, and a button to delete it. */
+function buildWordTable(wordsInCategory) {
+  var table = document.createElement('table');
+  table.className = 'word-table';
 
-  var main = document.createElement('div');
-  main.className = 'card-row-main';
+  var thead = document.createElement('thead');
+  thead.innerHTML =
+    '<tr><th>Noun</th><th>Article</th><th>Explanation</th><th></th></tr>';
+  table.appendChild(thead);
 
-  var text = document.createElement('div');
-  text.className = 'card-text';
-
-  var heading = document.createElement('p');
-  heading.className = 'card-question';
-  heading.innerHTML = '<span class="article-tag">' + word.article + '</span> ' + escapeHtml(word.noun);
-
-  var rule = document.createElement('p');
-  rule.className = 'card-answer';
-  rule.innerHTML = formatRuleHtml(word.rule);
-
-  text.appendChild(heading);
-  text.appendChild(rule);
-
-  var buttons = document.createElement('div');
-  buttons.className = 'card-row-buttons';
-
-  var editBtn = document.createElement('button');
-  editBtn.type = 'button';
-  editBtn.className = 'icon-btn edit-btn';
-  editBtn.textContent = 'Edit';
-  editBtn.addEventListener('click', function () {
-    editingId = word.id;
-    renderReference();
+  var tbody = document.createElement('tbody');
+  wordsInCategory.forEach(function (word) {
+    tbody.appendChild(buildWordRow(word));
   });
+  table.appendChild(tbody);
 
+  return table;
+}
+
+/* Builds the table row for one word: noun, article, a short explanation, and a delete button. */
+function buildWordRow(word) {
+  var row = document.createElement('tr');
+
+  var nounCell = document.createElement('td');
+  nounCell.className = 'word-cell';
+  nounCell.textContent = word.noun;
+
+  var articleCell = document.createElement('td');
+  articleCell.className = 'article-cell';
+  articleCell.textContent = word.article;
+
+  var ruleCell = document.createElement('td');
+  ruleCell.className = 'rule-cell';
+  ruleCell.innerHTML = formatRuleHtml(word.rule);
+
+  var deleteCell = document.createElement('td');
+  deleteCell.className = 'delete-cell';
   var deleteBtn = document.createElement('button');
   deleteBtn.type = 'button';
-  deleteBtn.className = 'icon-btn delete-btn';
-  deleteBtn.textContent = 'Delete';
+  deleteBtn.className = 'delete-x';
+  deleteBtn.textContent = '×';
+  deleteBtn.setAttribute('aria-label', 'Delete ' + word.noun);
   deleteBtn.addEventListener('click', function () {
     deleteWord(word.id);
   });
+  deleteCell.appendChild(deleteBtn);
 
-  buttons.appendChild(editBtn);
-  buttons.appendChild(deleteBtn);
-
-  main.appendChild(text);
-  main.appendChild(buttons);
-  row.appendChild(main);
-  row.appendChild(buildStatusBadge(wordStatus(word)));
+  row.appendChild(nounCell);
+  row.appendChild(articleCell);
+  row.appendChild(ruleCell);
+  row.appendChild(deleteCell);
 
   return row;
 }
@@ -302,88 +270,6 @@ function escapeHtml(text) {
 function formatRuleHtml(text) {
   var escaped = escapeHtml(text);
   return escaped.replace(/\b(exceptions?)\b/gi, '<span class="exception-word">$1</span>');
-}
-
-/* Builds a small badge showing whether a word is unpractised, known, or still learning. */
-function buildStatusBadge(status) {
-  var badge = document.createElement('span');
-  badge.className = 'status-badge' + (status ? ' ' + status : '');
-  badge.textContent = status === 'known' ? 'Known' :
-    status === 'learning' ? 'Still learning' : 'Not practised yet';
-  return badge;
-}
-
-/* Builds the inline edit form shown in place of a word row while it is being edited. */
-function buildEditRow(word) {
-  var row = document.createElement('li');
-  row.className = 'card-row';
-
-  var form = document.createElement('form');
-  form.className = 'edit-form';
-
-  var nounInput = document.createElement('input');
-  nounInput.type = 'text';
-  nounInput.value = word.noun;
-  nounInput.maxLength = 60;
-  nounInput.required = true;
-  nounInput.setAttribute('aria-label', 'Word');
-
-  var articleSelect = document.createElement('select');
-  articleSelect.setAttribute('aria-label', 'Correct article');
-  ARTICLES.forEach(function (article) {
-    var option = document.createElement('option');
-    option.value = article;
-    option.textContent = article;
-    if (article === word.article) {
-      option.selected = true;
-    }
-    articleSelect.appendChild(option);
-  });
-
-  var categorySelect = document.createElement('select');
-  categorySelect.setAttribute('aria-label', 'Category');
-  populateCategorySelect(categorySelect, word.category);
-
-  var ruleInput = document.createElement('textarea');
-  ruleInput.value = word.rule;
-  ruleInput.maxLength = 300;
-  ruleInput.rows = 2;
-  ruleInput.required = true;
-  ruleInput.setAttribute('aria-label', 'Rule / explanation');
-
-  var buttons = document.createElement('div');
-  buttons.className = 'edit-form-buttons';
-
-  var saveBtn = document.createElement('button');
-  saveBtn.type = 'submit';
-  saveBtn.className = 'save-btn';
-  saveBtn.textContent = 'Save';
-
-  var cancelBtn = document.createElement('button');
-  cancelBtn.type = 'button';
-  cancelBtn.className = 'icon-btn';
-  cancelBtn.textContent = 'Cancel';
-  cancelBtn.addEventListener('click', function () {
-    editingId = null;
-    renderReference();
-  });
-
-  buttons.appendChild(saveBtn);
-  buttons.appendChild(cancelBtn);
-
-  form.addEventListener('submit', function (event) {
-    event.preventDefault();
-    updateWord(word.id, nounInput.value, articleSelect.value, categorySelect.value, ruleInput.value);
-  });
-
-  form.appendChild(nounInput);
-  form.appendChild(articleSelect);
-  form.appendChild(categorySelect);
-  form.appendChild(ruleInput);
-  form.appendChild(buttons);
-  row.appendChild(form);
-
-  return row;
 }
 
 /* ---------- Practice view ---------- */
@@ -516,6 +402,44 @@ function renderChoiceButtons(word) {
   });
 }
 
+/* ---------- Theme ---------- */
+
+/* Reads the saved theme preference, defaulting to the original plain theme. */
+function loadTheme() {
+  try {
+    var saved = localStorage.getItem(THEME_KEY);
+    if (saved === 'colourful' || saved === 'default') {
+      return saved;
+    }
+  } catch (err) {
+    /* Storage may be blocked (e.g. private browsing); fall back to the default theme. */
+  }
+  return 'default';
+}
+
+/* Applies the given theme to the page and updates the toggle button's icon and label. */
+function applyTheme(theme) {
+  if (theme === 'colourful') {
+    document.documentElement.setAttribute('data-theme', 'colourful');
+  } else {
+    document.documentElement.removeAttribute('data-theme');
+  }
+  var toggle = document.getElementById('themeToggle');
+  toggle.textContent = theme === 'colourful' ? '🖋️ Back to plain' : '🎨 Bring on the colour';
+  toggle.setAttribute('aria-label', theme === 'colourful' ? 'Switch to plain theme' : 'Switch to colourful theme');
+}
+
+/* Switches between the plain and colourful themes and remembers the choice for next time. */
+function toggleTheme() {
+  var next = document.documentElement.getAttribute('data-theme') === 'colourful' ? 'default' : 'colourful';
+  applyTheme(next);
+  try {
+    localStorage.setItem(THEME_KEY, next);
+  } catch (err) {
+    /* Storage may be full or blocked; the choice just won't persist across reloads. */
+  }
+}
+
 /* ---------- Tabs ---------- */
 
 /* Switches between the "Practice" and "Reference" views, (re)starting practice each time it's opened. */
@@ -533,8 +457,11 @@ function showView(view) {
 }
 
 /* Wires up the add form, tabs, choice buttons, the click-anywhere-to-continue
-   behaviour, and the restart action, then draws the deck. */
+   behaviour, the theme toggle, and the restart action, then draws the deck. */
 function init() {
+  applyTheme(loadTheme());
+  document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+
   document.getElementById('addForm').addEventListener('submit', function (event) {
     event.preventDefault();
     var nounInput = document.getElementById('nounInput');
