@@ -11,59 +11,94 @@
 
     <header class="header">
       <h1>Flashcards — German Articles</h1>
-      <p class="subtitle">Practise der / die / das with question-and-answer cards.</p>
+      <p class="subtitle">Practise der / die / das.</p>
     </header>
 
     <nav class="tabs" id="tabs">
-      <button type="button" class="tab active" id="deckTab" data-view="deck">My Deck</button>
-      <button type="button" class="tab" id="reviewTab" data-view="review">Review</button>
+      <button type="button" class="tab active" id="practiceTab" data-view="practice">Practice</button>
+      <button type="button" class="tab" id="referenceTab" data-view="reference">Reference</button>
     </nav>
 
-    <section class="view active" id="deckView">
+    <section class="view active" id="practiceView">
 
-      <form class="add-form" id="addForm" autocomplete="off">
-        <label class="field">
-          <span class="field-label">Question</span>
-          <input type="text" id="questionInput" placeholder="e.g. Zeitung (newspaper)" maxlength="120" required>
-        </label>
-        <label class="field">
-          <span class="field-label">Answer</span>
-          <textarea id="answerInput" placeholder="e.g. die Zeitung — nouns ending in -ung are feminine." maxlength="300" rows="2" required></textarea>
-        </label>
-        <button type="submit" id="addButton">Add card</button>
-      </form>
+      <section class="howto">
+        <h2>How it works</h2>
+        <p>You'll see a German noun. Guess its article by clicking <strong>der</strong>, <strong>die</strong>, or <strong>das</strong> — the card flips to show whether you were right, the correct answer, and the rule behind it. Get a word right <strong>two times in a row</strong> and it's marked Known; otherwise it stays Still learning.</p>
+      </section>
 
-      <p class="counter" id="deckCounter"></p>
+      <p class="review-progress" id="practiceProgress"></p>
 
-      <ul class="card-list" id="cardList"></ul>
-      <p class="empty" id="deckEmpty">No cards yet — add your first one above.</p>
-
-    </section>
-
-    <section class="view" id="reviewView">
-
-      <p class="review-progress" id="reviewProgress"></p>
-
-      <div class="review-card" id="reviewCard" tabindex="0" role="button" aria-label="Flashcard, click or press space to flip">
-        <div class="review-card-inner" id="reviewCardInner">
-          <div class="review-face review-front" id="reviewFront"></div>
-          <div class="review-face review-back" id="reviewBack"></div>
+      <div class="practice-card" id="practiceCard">
+        <div class="practice-card-inner" id="practiceCardInner">
+          <div class="practice-face practice-front" id="practiceFront">
+            <p class="practice-noun" id="practiceNoun"></p>
+            <div class="choice-buttons" id="choiceButtons">
+              <button type="button" class="choice-btn" data-article="der">der</button>
+              <button type="button" class="choice-btn" data-article="die">die</button>
+              <button type="button" class="choice-btn" data-article="das">das</button>
+            </div>
+          </div>
+          <div class="practice-face practice-back" id="practiceBack">
+            <p class="result-banner" id="resultBanner"></p>
+            <p class="practice-answer" id="practiceAnswer"></p>
+            <p class="practice-rule" id="practiceRule"></p>
+            <span class="status-badge" id="practiceStatusBadge"></span>
+          </div>
         </div>
       </div>
 
-      <p class="review-hint" id="reviewHint">Click the card or press Space to flip.</p>
-
-      <div class="review-actions" id="reviewActions">
-        <button type="button" class="still-learning-btn" id="stillLearningBtn">Still learning</button>
-        <button type="button" class="known-btn" id="knownBtn">Known</button>
+      <div class="review-actions" id="practiceActions">
+        <button type="button" id="nextWordBtn">Next word</button>
       </div>
 
-      <p class="empty" id="reviewEmpty">No cards to review yet — add some in "My Deck" first.</p>
+      <p class="empty" id="practiceEmpty">No words to practise yet — add some in "Reference" first.</p>
 
-      <div class="review-done" id="reviewDone">
-        <p class="review-done-summary" id="reviewDoneSummary"></p>
-        <button type="button" id="restartReviewBtn">Review again</button>
+      <div class="review-done" id="practiceDone">
+        <p class="review-done-summary" id="practiceDoneSummary"></p>
+        <button type="button" id="restartPracticeBtn">Practise again</button>
       </div>
+
+    </section>
+
+    <section class="view" id="referenceView">
+
+      <section class="howto">
+        <h2>How it works</h2>
+        <p>Every word in the practice deck, grouped by the rule that explains its article. Add your own below — pick where it belongs and it joins the practice deck right away; delete one and it's removed from practice too.</p>
+      </section>
+
+      <section class="add-section">
+        <h2>Add a word</h2>
+        <form class="add-form" id="addForm" autocomplete="off">
+          <label class="field">
+            <span class="field-label">Word (no article)</span>
+            <input type="text" id="nounInput" placeholder="e.g. Zeitung" maxlength="60" required>
+          </label>
+          <label class="field">
+            <span class="field-label">Correct article</span>
+            <select id="articleInput" required>
+              <option value="" disabled selected>Choose one</option>
+              <option value="der">der</option>
+              <option value="die">die</option>
+              <option value="das">das</option>
+            </select>
+          </label>
+          <label class="field">
+            <span class="field-label">Category</span>
+            <select id="categoryInput" required></select>
+          </label>
+          <label class="field">
+            <span class="field-label">Rule / explanation</span>
+            <textarea id="ruleInput" placeholder="e.g. Nouns ending in -ung are (almost) always feminine." maxlength="300" rows="2" required></textarea>
+          </label>
+          <button type="submit" id="addButton">Add word</button>
+        </form>
+      </section>
+
+      <p class="counter" id="referenceCounter"></p>
+
+      <div id="referenceGroups"></div>
+      <p class="empty" id="referenceEmpty">No words yet — add your first one above.</p>
 
     </section>
 
