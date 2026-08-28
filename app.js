@@ -10,14 +10,18 @@ var STORAGE_KEY = 'flashcardsDE.v3';
 var ARTICLES = ['der', 'die', 'das'];
 var KNOWN_STREAK = 2;
 
-/* The fixed set of rule categories words are grouped under, in display order. */
+/* The fixed set of rule categories words are grouped under, in display order.
+   "Manually added" is not a rule category — it's where words added through
+   the form land automatically, since the user doesn't pick one. */
 var CATEGORIES = [
   'Feminine (die) — reliable endings',
   'Masculine (der) — reliable endings',
   'Neuter (das) — reliable endings',
   'Semantic & category rules',
-  'Exceptions'
+  'Exceptions',
+  'Manually added'
 ];
+var MANUAL_CATEGORY = 'Manually added';
 
 /* Starter deck: gender rules by noun ending, semantic rules, and the well-known
    exceptions to each, so the "why" is included right in the rule text. */
@@ -146,14 +150,15 @@ function wordStatus(word) {
   return word.correctStreak >= KNOWN_STREAK ? 'known' : 'learning';
 }
 
-/* Adds a new word from the given noun/article/category/rule, ignoring incomplete input. */
-function addWord(noun, article, category, rule) {
+/* Adds a new word from the given noun/article/rule, ignoring incomplete input.
+   It's always filed under the "Manually added" category — the user doesn't pick one. */
+function addWord(noun, article, rule) {
   var n = noun.trim();
   var r = rule.trim();
-  if (!n || !r || ARTICLES.indexOf(article) === -1 || CATEGORIES.indexOf(category) === -1) {
+  if (!n || !r || ARTICLES.indexOf(article) === -1) {
     return;
   }
-  words.push({ id: makeId(), noun: n, article: article, category: category, rule: r, correctStreak: 0, practised: false });
+  words.push({ id: makeId(), noun: n, article: article, category: MANUAL_CATEGORY, rule: r, correctStreak: 0, practised: false });
   saveWords();
   renderReference();
 }
@@ -530,15 +535,12 @@ function showView(view) {
 /* Wires up the add form, tabs, choice buttons, the click-anywhere-to-continue
    behaviour, and the restart action, then draws the deck. */
 function init() {
-  populateCategorySelect(document.getElementById('categoryInput'), null);
-
   document.getElementById('addForm').addEventListener('submit', function (event) {
     event.preventDefault();
     var nounInput = document.getElementById('nounInput');
     var articleInput = document.getElementById('articleInput');
-    var categoryInput = document.getElementById('categoryInput');
     var ruleInput = document.getElementById('ruleInput');
-    addWord(nounInput.value, articleInput.value, categoryInput.value, ruleInput.value);
+    addWord(nounInput.value, articleInput.value, ruleInput.value);
     nounInput.value = '';
     articleInput.value = '';
     ruleInput.value = '';
